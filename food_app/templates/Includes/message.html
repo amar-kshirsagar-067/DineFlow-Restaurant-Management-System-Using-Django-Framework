@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Messages</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        /* Custom Styles for Alerts */
+        .alert-info {
+            background-color: #cce5ff; /* Light blue background */
+            color: #004085; /* Dark blue text */
+            border: 2px solid #b8daff; /* Light blue border */
+            border-radius: 8px; /* Rounded corners */
+            padding: 10px; /* Padding for larger box */
+            margin: 10px 0; /* Space between messages */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert alert-info alert-dismissible fade show text-center light-bold" role="alert">
+                    <i>{{ msg }}</i>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+    

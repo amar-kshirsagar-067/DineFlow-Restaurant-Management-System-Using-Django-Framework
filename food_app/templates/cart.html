@@ -1,0 +1,96 @@
+{% extends "layouts/main.html" %}
+
+
+{% block content %}
+    {% include "includes/message.html" %}
+    <section class="bg-light py-4 my-5" style="min-height:500px;">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-12">
+                    <h3 class="mb-13 hidden">Your Cart</h3>
+                    <hr style="border-color:black;">
+                    <table class="table table-bordered table-hover align-middle text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total Price</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'Product_detail' item.product.category item.product.name %}">
+                                    <img src="{{ item.product.item_image }}" style="width:100px; height:100px; object-fit:cover;" class="d-block mx-auto rounded">
+                                     </a>
+                                </td>
+                                <td>
+                                    <h5>{{ item.product.name }}</h5>
+                                    <p class="text-muted">{{ item.product.item_description|truncatewords:10 }}</p>
+                                </td>
+                                <td>
+                                    <h6>₹{{ item.product.offer_price | stringformat:'d' }}</h6>
+                                </td>
+                                {% if item.product_qty == 1 %}
+                                    <td>
+                                        <h5>{{ item.product_qty }} item</h5>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        <h5>{{ item.product_qty }} items</h5>
+                                    </td>
+                                {% endif %}
+                                <td>
+                                    <h6>₹{{ item.total_price }}</h6>
+                                </td>
+                                <td>
+                                    <a href = "{% url "RemoveCart" item.id %}" onclick="return confirm('Are you sure to remove')" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-trash"></i> Remove
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="4" class="text-end"><strong>Total Amount</strong></td>
+                                <td colspan="2"><strong>₹{{ total_amount }}</strong></td>
+                            </tr>
+                        <!-- ADD THIS NEW ROW -->
+<tr>
+    <td colspan="6" class="text-end">
+
+        <a href="{% url 'generate_receipt' %}" class="btn btn-success">
+            Download Receipt PDF
+        </a>
+
+    </td>
+</tr>
+                        </tbody>
+                    </table>
+                    
+                </div> 
+            </div>
+        </div>
+
+    
+    </section>
+
+
+    
+    
+    
+{% endblock %}
+<!-- 1. for example have 3 products in cart: Each product has its own plus button, minus button, and quantity input field.-->
+
+<!-- 2.The forEach loop goes through every plus button, minus button, and quantity input field.-->
+
+<!-- 3.The index is used to match the corresponding elements:-->
+
+<!-- 4.When you click Plus Button 2, it knows to look at Quantity Input Field 2 because they both have the same index, which is 1.
+When you click the plus button for Item 2 (where the index is 1):-->
+
+<!-- 5.The code looks at the quantity input field for that same index, which is texQtyList[1].
+It reads the current value, increases it by 1, and then updates Quantity Input Field 2.-->

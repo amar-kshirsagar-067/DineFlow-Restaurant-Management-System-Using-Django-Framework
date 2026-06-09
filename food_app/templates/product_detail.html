@@ -1,0 +1,190 @@
+{% extends "layouts/main.html" %}
+
+
+{% block content %}
+    <div class="container">
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'Home' %}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'Category' %}">Categories</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'Category' item.category %}">{{item.category}}</a></li>
+              <li class="breadcrumb-item active" aria-current="{% url 'Product_detail' item.category item.name %}">{{item.name}}</li>
+            </ol>
+          </nav>
+    </div>
+ 
+    <section class="bg-light py-4 my-5">
+        <div class="container" >
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="mb-13 hidden"> {{item.name}} </h4>
+                    <hr style="border-color:black;">
+                </div>
+                <div class="col-4 my-3">
+                  <img src="{{ item.item_image }}" class="card-img-top product-img" alt="Products">
+                </div>
+                <div class="col-8 my-3">
+                    <h5 class="text-success"> {{ item.name | upper}} </h5>
+                    <p>
+                        {% if item.item_description %}
+                            {{ item.item_description|safe }}
+                        {% endif %}
+                    </p>
+                    <h6 class="my-2 text-danger"> Current Price : Rs. <s> {{ item.price }} </s> </h6>
+                    <h5 class="my-2 text-primary"> Offer Price : Rs.{{ item.offer_price }} </h5>
+                    <div class="my-3 d-flex">
+                        {% if item.quantity > 0 %}
+                        <input type="hidden" value="{{item.id}}" id="pId"> <!-- The purpose of using an HTML <input type="hidden"> element with type="hidden" is to store data that you want to send to the server (or use in JavaScript) without displaying it to the user. -->
+                        
+                            <p>
+                                <div class="input-group" style="width:150px ">
+                                    <button class="input-group-text bg-success text-light" id="btnMinus"><i class="fa fa-minus"></i></button>
+                                        <input type="text" names="qty" id="texQty" value="1" class="form-control text-center">
+                                    <button class="input-group-text bg-success text-light" id="btnPlus"><i class="fa fa-plus"></i></button>
+                                </div>
+                            </p>
+                            <button class="btn btn-primary flex me-3 ms-3" id="btnCart">&#127869; Add to Order</button>
+                        {% else %}
+                            <button class="btn btn-secondary flex me-2">&#128542; Sold Out </button>
+                        {% endif %}
+                        <button class="btn btn-danger" id="btnHeart"><i class="fa fa-heart"></i></button>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        // This ensures that the script runs only after the HTML content has fully loaded. 
+        // It ensures that the buttons (btnPlus and btnMinus) and the text input (texQty) exist in the DOM before the event listeners are attached.
+        document.addEventListener("DOMContentLoaded", function(event){ 
+            // The 'getElementById' function is used to grab the elements from the DOM
+            const btnPlus = document.getElementById("btnPlus");
+            const btnMinus = document.getElementById("btnMinus");
+            const texQty = document.getElementById("texQty");
+            const pId = document.getElementById("pId");
+            const btnCart = document.getElementById("btnCart");
+            const btnHeart = document.getElementById("btnHeart");
+
+            btnPlus.addEventListener("click", function(){ // addEventListener("click", ...): This listens for a click event on the plus button.
+                let qty=parseInt(texQty.value,10); // This reads the current value of the input field and converts it to an integer (10 is the radix for base-10 numbers).
+                qty=isNaN(qty)?0:qty; // If the value isn't a valid number (e.g., if the input is empty), it sets qty to 0.
+                //console.log(qty)
+                if(qty<10){ // Ensures the quantity cannot exceed 10 (the upper limit).
+                    qty++; // Increments the quantity by 1 if the current value is below 10.
+                    texQty.value=qty // Updates the input field with the new quantity.
+                }
+                
+            });
+
+            btnMinus.addEventListener("click", function(){
+                let qty=parseInt(texQty.value,10);
+                qty=isNaN(qty)?0:qty;
+                //console.log(qty)
+                if(qty>1){
+                    qty--;
+                    texQty.value=qty
+                }
+            });
+
+            btnCart.addEventListener("click", function(){
+                let qty = parseInt(texQty.value, 10);  // Convert the input to a number
+
+                // First check if qty is not a valid number
+                if (isNaN(qty)) {
+                    alert("Quantity must be a valid number");
+                } else if (qty > 0) {
+                    let postobj = {
+                        product_qty: qty,
+                        product_id: pId.value,
+                    }
+                    console.log(postobj);
+                    //Uses fetch() to send the data to the 'AddToCart' URL.
+                    // The request includes necessary headers (for CSRF protection and AJAX identification).
+                    fetch("{% url 'AddToCart' %}",{ 
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers:{
+                            // Informs the server that the client expects a JSON response.
+                            'Accept': 'application/json',
+                            //  Identifies this request as coming from an AJAX call.
+                            'X-Requested-With': "XMLHttpRequest",
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify(postobj)
+                    })
+                    // Logs the response data for debugging or further processing.
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(data => {
+                        //console.log(data);
+                        alert(data['status'])
+                    });
+                    
+                } else {
+                    alert("Enter the quantity to proceed");
+                }          
+            });
+
+            btnHeart.addEventListener("click", function(){
+                let postobj = {
+                    product_id: pId.value,
+                }
+                console.log(postobj);
+                //Uses fetch() to send the data to the 'AddToCart' URL.
+                // The request includes necessary headers (for CSRF protection and AJAX identification).
+                fetch("{% url 'AddToFav' %}",{ 
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers:{
+                        // Informs the server that the client expects a JSON response.
+                        'Accept': 'application/json',
+                        //  Identifies this request as coming from an AJAX call.
+                        'X-Requested-With': "XMLHttpRequest",
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(postobj)
+                })
+                // Logs the response data for debugging or further processing.
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    //console.log(data);
+                    alert(data['status'])
+                });            
+            });
+        });
+    </script>
+{% endblock %}
+
+
+/*
+DOM stands for Document Object Model. It is a programming interface that allows scripts (like JavaScript) to interact with and manipulate the content, structure, and style of a web page.
+
+Key Points about the DOM:
+1. Document: Refers to the entire web page (HTML document).
+2. Object: The HTML elements (like buttons, divs, inputs, etc.) are treated as objects in JavaScript.
+3. Model: It describes how the elements are structured in a tree-like format.
+*/
+
+/*
+An event listener is a function that waits (or "listens") for an event to occur and then responds by executing a specific piece of code.
+
+Example Events:
+Clicking a button
+Hovering over a link
+Submitting a form
+Scrolling a page
+*/
+
+/*
+addEventListener is a JavaScript method that attaches an event listener to a specific element. It makes that element respond to a particular event.
+
+element.addEventListener("event", function);
+
+element: The HTML element you want to attach the listener to.
+"event": The type of event you're listening for, like "click", "keydown", "mouseover", etc.
+function: The function that will run when the event occurs.
+*/
+

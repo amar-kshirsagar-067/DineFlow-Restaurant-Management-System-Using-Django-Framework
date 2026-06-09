@@ -1,0 +1,132 @@
+{% extends "layouts/main.html" %}
+
+{% block content %}
+
+<div class="container" style="margin-top: 45px; min-height:600px">
+
+    <div class="row g-4">
+        <div class="col-12">
+            <h3 class="mb-3 text-center">New User Registration</h3>
+            <hr style="border-color:black;">
+        </div>
+    </div>
+
+    <section class="py-4 my-2 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+
+                            <h4 class="card-title text-center mb-4">
+                                Create an Account
+                            </h4>
+
+                            <form method="post" action="">
+                                {% csrf_token %}
+
+                                 {% if form.non_field_errors %}
+                                 <div class="alert alert-danger">
+                                       {% for error in form.non_field_errors %}
+                                             {{ error }}
+                                       {% endfor %}
+                                 </div>
+                                 {% endif %}
+
+    
+
+                                <div class="mb-4">
+                                    <label class="form-label">User Name</label>
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        class="form-control"
+                                        placeholder="e.g. Ashutosh"
+                                        value="{{ form.username.value|default:'' }}"
+                                        required
+                                    >
+
+                                    {% if form.errors.username %}
+                                        <div class="p-2 mt-2 border border-danger rounded bg-danger bg-opacity-10 text-danger">
+                                            {{ form.errors.username }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">User Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        class="form-control"
+                                        placeholder="e.g. ashutosh@gmail.com"
+                                        value="{{ form.email.value|default:'' }}"
+                                        required
+                                    >
+
+                                    {% if form.errors.email %}
+                                        <div class="p-2 mt-2 border border-danger rounded bg-danger bg-opacity-10 text-danger">
+                                            {{ form.errors.email }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Password</label>
+                                    <input
+                                        type="password"
+                                        name="password1"
+                                        class="form-control"
+                                        placeholder="Enter a strong password"
+                                        required
+                                    >
+
+                                    {% if form.errors.password1 %}
+                                        <div class="p-2 mt-2 border border-danger rounded bg-danger bg-opacity-10 text-danger">
+                                            {{ form.errors.password1 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Confirm Password</label>
+                                    <input
+                                        type="password"
+                                        name="password2"
+                                        class="form-control"
+                                        placeholder="Confirm your password"
+                                        required
+                                    >
+
+                                    {% if form.errors.password2 %}
+                                        <div class="p-2 mt-2 border border-danger rounded bg-danger bg-opacity-10 text-danger">
+                                            {{ form.errors.password2 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100">
+                                    Register
+                                </button>
+
+                            </form>
+
+                            <p class="my-3 text-center">
+                                Already have an account?
+                                <a href="{% url 'Login' %}">
+                                    Login Now
+                                </a>
+                            </p>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}
