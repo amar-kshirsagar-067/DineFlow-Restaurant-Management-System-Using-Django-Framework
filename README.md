@@ -1,4 +1,3 @@
-# DineFlow-Restaurant-Management-System-Using-Django-Framework
 # DineFlow - Restaurant Management System Using Django Framework
 
 DineFlow is a web-based Restaurant Management System developed using Django. The system helps restaurants manage customers, menu items, food orders, billing, and administrative operations through a centralized platform.
